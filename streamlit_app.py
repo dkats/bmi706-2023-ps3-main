@@ -37,38 +37,25 @@ df = load_data()
 st.write("## Age-specific cancer mortality rates")
 
 ### P2.1 ###
-# replace with st.slider
-year = 2012
+year = st.slider('Year', min_value=min(df["Year"]), max_value=max(df["Year"]), value = 2012)
 subset = df[df["Year"] == year]
 ### P2.1 ###
 
 
 ### P2.2 ###
-# replace with st.radio
-sex = "M"
+sex = st.radio('Sex', ['M', 'F'])
 subset = subset[subset["Sex"] == sex]
 ### P2.2 ###
 
 
 ### P2.3 ###
-# replace with st.multiselect
-# (hint: can use current hard-coded values below as as `default` for selector)
-countries = [
-    "Austria",
-    "Germany",
-    "Iceland",
-    "Spain",
-    "Sweden",
-    "Thailand",
-    "Turkey",
-]
+countries = st.multiselect('Countries', sorted(set(df['Country'])), default = ["Austria","Germany","Iceland","Spain","Sweden","Thailand","Turkey"])
 subset = subset[subset["Country"].isin(countries)]
 ### P2.3 ###
 
 
 ### P2.4 ###
-# replace with st.selectbox
-cancer = "Malignant neoplasm of stomach"
+cancer = st.selectbox('Cancer', sorted(set(df['Cancer'])))
 subset = subset[subset["Cancer"] == cancer]
 ### P2.4 ###
 
@@ -85,10 +72,10 @@ ages = [
     "Age >64",
 ]
 
-chart = alt.Chart(subset).mark_bar().encode(
+chart = alt.Chart(subset).mark_rect().encode(
     x=alt.X("Age", sort=ages),
-    y=alt.Y("Rate", title="Mortality rate per 100k"),
-    color="Country",
+    y=alt.Y('Country', sort='ascending'),
+    color=alt.Color("Rate", title="Mortality rate per 100k", scale=alt.Scale(type='log', domain=(0.01, 1000), clamp=True)),
     tooltip=["Rate"],
 ).properties(
     title=f"{cancer} mortality rates for {'males' if sex == 'M' else 'females'} in {year}",
